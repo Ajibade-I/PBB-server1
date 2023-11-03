@@ -2,10 +2,15 @@ const express = require("express");
 const {
   createCharity,
   getCharities,
+  deleteCharity,
+  getCharityDonations,
 } = require("../controller/charity-controller");
+const { isLogin, isAdmin } = require("../lib/middleware/auth-middleware");
 const router = express.Router();
 
-router.post("/create-charity", createCharity);
-router.get("/", getCharities);
+router.post("/", isLogin, isAdmin, createCharity);
+router.get("/", isLogin, isAdmin, getCharities);
+router.delete("/:charityId", isLogin, isAdmin, deleteCharity);
+router.get("/:charityId/donations", isLogin, isAdmin, getCharityDonations);
 
 module.exports = router;

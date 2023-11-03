@@ -8,6 +8,7 @@ const Member = db.Member;
 const jwt = require("jsonwebtoken");
 const privateKey = process.env.JWT_PRIVATE_KEY;
 
+//@Method:POST /member/signup
 const memberSignup = async (req, res, next) => {
   const error = await validateSignup(req.body);
   if (error) {
@@ -46,6 +47,7 @@ const memberSignup = async (req, res, next) => {
   res.status(200).json({ success: true, message: "Signup sucessfull" });
 };
 
+//@Method:POST /member/login
 const memberLogin = async (req, res) => {
   const error = await validateLogin(req.body);
   if (error) {
@@ -79,6 +81,8 @@ const memberLogin = async (req, res) => {
   res.status(200).json({ success: true, message: "Log in successfull" });
 };
 
+//@Method:GET /members
+//@Access:admin
 const getMembers = async (req, res) => {
   const members = await Member.findAll();
   res.status(200).json({ success: true, message: members });
