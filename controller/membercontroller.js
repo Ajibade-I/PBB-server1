@@ -6,6 +6,8 @@ const BadRequestError = require("../lib/errors/badrequest");
 const db = require("../models");
 const Member = db.Member;
 const jwt = require("jsonwebtoken");
+const { successResponse, pagenation } = require("../lib/utility-functions");
+const NotFoundError = require("../lib/errors/notfound-error");
 const privateKey = process.env.JWT_PRIVATE_KEY;
 
 //@Method:POST /member/signup
@@ -44,7 +46,7 @@ const memberSignup = async (req, res, next) => {
   });
 
   await member.save();
-  res.status(200).json({ success: true, message: "Signup sucessfull" });
+  return successResponse(res, "Signup sucessfull");
 };
 
 //@Method:POST /member/login
@@ -78,14 +80,22 @@ const memberLogin = async (req, res) => {
     expires: new Date(Date.now() + oneDay),
   });
 
-  res.status(200).json({ success: true, message: "Log in successfull" });
+  return successResponse(res, "Log in successfull");
 };
 
 //@Method:GET /members
 //@Access:admin
 const getMembers = async (req, res) => {
-  const members = await Member.findAll();
-  res.status(200).json({ success: true, message: members });
+  const page = req.query.page;
+
+  let members = await Member.findAll();
+  if (!members) {
+    throw new NotFoundError("There no members");
+  }
+  if (page) {
+    members = pagenation(page, members);
+  }
+  return successResponse(res, "", members);
 };
 
 module.exports.memberSignup = memberSignup;

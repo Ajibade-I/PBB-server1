@@ -9,6 +9,7 @@ const {
   charityRoutes,
   donationRoutes,
 } = require("./routes/routes-index");
+const accesslogs = require("./lib/middleware/accesslogs");
 const app = express();
 const port = 6000;
 
@@ -19,9 +20,9 @@ app.use(cookieParser(process.env.JWT_PRIVATE_KEY));
 //   console.log("Models synchronized with database");
 // });
 
-app.use("/member", memberRoutes);
-app.use("/charity", charityRoutes);
-app.use("/donation", donationRoutes);
+app.use("/member", accesslogs, memberRoutes);
+app.use("/charity", accesslogs, charityRoutes);
+app.use("/donation", accesslogs, donationRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
@@ -29,5 +30,3 @@ app.use(errorHandler);
 app.listen(port, () => {
   console.log(`Server listening on ${port}...`);
 });
-
-//ignore the config file
