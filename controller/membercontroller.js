@@ -11,6 +11,8 @@ const NotFoundError = require("../lib/errors/notfound-error");
 const privateKey = process.env.JWT_PRIVATE_KEY;
 
 //@Method:POST /member/signup
+//@Access: public
+//@Desc: sign up
 const memberSignup = async (req, res, next) => {
   const error = await validateSignup(req.body);
   if (error) {
@@ -50,6 +52,8 @@ const memberSignup = async (req, res, next) => {
 };
 
 //@Method:POST /member/login
+//@Access: public
+//@Desc: member login
 const memberLogin = async (req, res) => {
   const error = await validateLogin(req.body);
   if (error) {
@@ -85,6 +89,7 @@ const memberLogin = async (req, res) => {
 
 //@Method:GET /members
 //@Access:admin
+//@Desc : get all members
 const getMembers = async (req, res) => {
   const page = req.query.page;
 

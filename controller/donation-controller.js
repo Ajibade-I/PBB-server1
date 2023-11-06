@@ -7,6 +7,8 @@ const Donation = db.Donations;
 const Charity = db.Charity;
 
 //@Method : POST /donations/:charityId/donate-cash"
+//@Access: public
+//@Desc: donate cash
 const donateCash = async (req, res) => {
   const memberId = req.user.id;
   const charityId = req.params.charityId;
@@ -30,7 +32,9 @@ const donateCash = async (req, res) => {
   charity.raised += parseInt(amount);
   charity.no_of_sponsors += 1;
   charity.percentage = (charity.raised / charity.goal) * 100;
-
+  if (charity.percentage > 100) {
+    charity.percentage = 100;
+  }
   if (charity.raised >= charity.goal) {
     charity.status = "completed";
   }
@@ -54,6 +58,7 @@ const donateCash = async (req, res) => {
 
 //@Method : GET /donations
 //@Access: admin
+//@Desc : get all the donations made to every charity
 const getAllDonations = async (req, res) => {
   const page = req.query.page;
 
@@ -69,6 +74,8 @@ const getAllDonations = async (req, res) => {
 };
 
 //@Method : GET /donations/member
+//@Access: public
+//@Desc: get donation history
 const getDonationHistory = async (req, res) => {
   const page = req.query;
   const memberId = req.user.id;
@@ -94,7 +101,8 @@ const getDonationHistory = async (req, res) => {
 };
 
 //@Method : GET /donations/charities
-
+//@Access: public
+//@Desc: get all charties member has donated to
 const getMyCharities = async (req, res) => {
   const page = req.query.page;
   const memberId = req.user.id;
@@ -117,6 +125,7 @@ const getMyCharities = async (req, res) => {
 };
 
 module.exports.donateCash = donateCash;
+//handle donation in other currencies
 module.exports.getAllDonations = getAllDonations;
 module.exports.getDonationHistory = getDonationHistory;
 module.exports.getMyCharities = getMyCharities;
