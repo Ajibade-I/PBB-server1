@@ -8,6 +8,7 @@ const {
   memberRoutes,
   charityRoutes,
   donationRoutes,
+  messageRoutes,
 } = require("./routes/routes-index");
 const accesslogs = require("./lib/middleware/accesslogs");
 const app = express();
@@ -16,13 +17,10 @@ const port = process.env.PORT || 6000;
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_PRIVATE_KEY));
 
-// db.sequelize.sync({ force: true }).then(() => {
-//   console.log("Models synchronized with database");
-// });
-
 app.use("/member", accesslogs, memberRoutes);
 app.use("/charity", accesslogs, charityRoutes);
 app.use("/donation", accesslogs, donationRoutes);
+app.use("/", accesslogs, messageRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
@@ -32,3 +30,6 @@ app.listen(port, () => {
 });
 
 //add nodemailer
+// db.sequelize.sync({ force: true }).then(() => {
+//   console.log("Models synchronized with database");
+// });

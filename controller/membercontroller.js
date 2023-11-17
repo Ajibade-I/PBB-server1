@@ -124,7 +124,7 @@ const getApplications = async (req, res) => {
   return successResponse(res, "Applicants", members);
 };
 
-//@Method:PUT
+//@Method:PUT members/:memberId/accept
 //@Access:admin
 //@Desc : accept or reject an application
 const acceptMembershipApplication = async (req, res) => {
@@ -141,7 +141,7 @@ const acceptMembershipApplication = async (req, res) => {
 
   return successResponse(res, "Application accepted");
 };
-//@Method:PUT
+//@Method:PUT members/:memberId/reject
 //@Access:admin
 //@Desc : reject an application
 const rejectMembershipApplication = async (req, res) => {
@@ -156,7 +156,7 @@ const rejectMembershipApplication = async (req, res) => {
     firstName: rejectedMember.firstName,
   });
 
-  return successResponse(res, "Application accepted");
+  return successResponse(res, "Application rejected");
 };
 
 module.exports.memberApplication = memberApplication;
