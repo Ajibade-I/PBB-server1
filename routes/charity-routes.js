@@ -10,7 +10,7 @@ const { isLogin, isAdmin } = require("../lib/middleware/auth-middleware");
 const router = express.Router();
 
 router.post("/", isLogin, isAdmin, createCharity);
-router.get("/", isLogin, isAdmin, getCharities);
+router.get("/", getCharities);
 router.delete("/:charityId", isLogin, isAdmin, deleteCharity);
 router.get("/:charityId/donations", isLogin, isAdmin, getCharityDonations);
 router.put("/:charityId/update", isLogin, isAdmin, updateCharity);

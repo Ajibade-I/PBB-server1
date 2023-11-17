@@ -29,6 +29,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       emailAddress: {
         type: DataTypes.STRING,
+        validate: {
+          isEmail: true,
+        },
       },
     },
     {

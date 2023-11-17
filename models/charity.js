@@ -3,18 +3,22 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class Charity extends Model {
+  class Charities extends Model {
     static associate(models) {
-      Charity.hasMany(models.Donations, {
+      Charities.hasMany(models.Donations, {
         foreignKey: "charityId",
         as: "donations",
       });
     }
   }
-  Charity.init(
+  Charities.init(
     {
       name: {
         type: DataTypes.STRING,
+        allowNull: false,
+      },
+      description: {
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       goal: {
@@ -41,11 +45,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Charity",
+      modelName: "Charities",
       paranoid: true, // Enable paranoid mode for soft deletion
       timestamps: true, // You can also set timestamps to true if you want createdAt and updatedAt columns
     }
   );
 
-  return Charity;
+  return Charities;
 };

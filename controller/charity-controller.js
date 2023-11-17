@@ -40,7 +40,7 @@ const createCharity = async (req, res) => {
 };
 
 //@Method : GET /charity
-//@Access: admin
+//@Access: public
 //@Desc: get all charities(with filter options if required)
 const getCharities = async (req, res) => {
   const page = req.query.page;
