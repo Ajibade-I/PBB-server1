@@ -11,7 +11,7 @@ const {
 } = require("./routes/routes-index");
 const accesslogs = require("./lib/middleware/accesslogs");
 const app = express();
-const port = 6000;
+const port = process.env.PORT || 6000;
 
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_PRIVATE_KEY));
@@ -30,3 +30,5 @@ app.use(errorHandler);
 app.listen(port, () => {
   console.log(`Server listening on ${port}...`);
 });
+
+//add nodemailer

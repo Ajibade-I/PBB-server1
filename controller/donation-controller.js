@@ -1,5 +1,8 @@
 const BadRequestError = require("../lib/errors/badrequest");
 const NotFoundError = require("../lib/errors/notfound-error");
+const {
+  sendSuccessfulDonation,
+} = require("../lib/helpers/messages/donation-succesfull");
 const { successResponse, pagenation } = require("../lib/utility-functions");
 const { validateDonation } = require("../lib/validation/validate-donation");
 const db = require("../models");
@@ -10,7 +13,6 @@ const Charity = db.Charity;
 //@Access: public
 //@Desc: donate cash
 const donateCash = async (req, res) => {
-  const memberId = req.user.id;
   const charityId = req.params.charityId;
 
   const error = await validateDonation(req.body);
@@ -53,6 +55,7 @@ const donateCash = async (req, res) => {
 
   await donation.save();
 
+  sendSuccessfulDonation({ email: emailAddress, firstName });
   return successResponse(res, "Thank you for your donation");
 };
 
@@ -70,62 +73,8 @@ const getAllDonations = async (req, res) => {
     donations = pagenation(page, donations);
   }
 
-  return successResponse(res, "", donations);
-};
-
-//@Method : GET /donations/member
-//@Access: public
-//@Desc: get donation history
-const getDonationHistory = async (req, res) => {
-  const page = req.query;
-  const memberId = req.user.id;
-
-  let memberDonations = await Donation.findAll({
-    where: { memberId: memberId },
-  });
-  if (memberDonations.length === 0) {
-    throw new NotFoundError("You have no donations");
-  }
-
-  const totalAmountDonated = memberDonations
-    .map((donation) => donation.amount)
-    .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-
-  if (page) {
-    memberDonations = pagenation(page, memberDonations);
-  }
-  return successResponse(res, "Your donations", [
-    memberDonations,
-    totalAmountDonated,
-  ]);
-};
-
-//@Method : GET /donations/charities
-//@Access: public
-//@Desc: get all charties member has donated to
-const getMyCharities = async (req, res) => {
-  const page = req.query.page;
-  const memberId = req.user.id;
-  const donations = await Donation.findAll({ where: { memberId: memberId } });
-  if (!donations) {
-    throw new NotFoundError("You have not made any donations");
-  }
-
-  const charityIds = donations.map((donation) => donation.charityId);
-  const charityPromises = charityIds.map((charity) =>
-    Charity.findByPk(charity)
-  );
-
-  let charities = await Promise.all(charityPromises);
-
-  if (page) {
-    charities = pagenation(page, charities);
-  }
-  return successResponse(res, "Charities you have donated to", charities);
+  return successResponse(res, "Donations", donations);
 };
 
 module.exports.donateCash = donateCash;
-//handle donation in other currencies
 module.exports.getAllDonations = getAllDonations;
-module.exports.getDonationHistory = getDonationHistory;
-module.exports.getMyCharities = getMyCharities;

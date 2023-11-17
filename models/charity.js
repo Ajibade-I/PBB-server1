@@ -39,7 +39,12 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 0,
       },
     },
-    { sequelize, modelName: "Charity" }
+    {
+      sequelize,
+      modelName: "Charity",
+      paranoid: true, // Enable paranoid mode for soft deletion
+      timestamps: true, // You can also set timestamps to true if you want createdAt and updatedAt columns
+    }
   );
 
   return Charity;

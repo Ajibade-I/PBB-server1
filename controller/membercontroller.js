@@ -8,12 +8,18 @@ const Member = db.Member;
 const jwt = require("jsonwebtoken");
 const { successResponse, pagenation } = require("../lib/utility-functions");
 const NotFoundError = require("../lib/errors/notfound-error");
+const {
+  sendApplicationAccepted,
+} = require("../lib/helpers/messages/membership-accepted");
+const {
+  sendApplicationRejected,
+} = require("../lib/helpers/messages/membershipRejected");
 const privateKey = process.env.JWT_PRIVATE_KEY;
 
 //@Method:POST /member/signup
 //@Access: public
-//@Desc: sign up
-const memberSignup = async (req, res, next) => {
+//@Desc: submit membership application
+const memberApplication = async (req, res, next) => {
   const error = await validateSignup(req.body);
   if (error) {
     throw new BadRequestError(error);
@@ -51,10 +57,10 @@ const memberSignup = async (req, res, next) => {
   return successResponse(res, "Signup sucessfull");
 };
 
-//@Method:POST /member/login
+//@Method:POST /member/admin/login
 //@Access: public
-//@Desc: member login
-const memberLogin = async (req, res) => {
+//@Desc: admin login
+const adminLogin = async (req, res) => {
   const error = await validateLogin(req.body);
   if (error) {
     throw new BadRequestError(error);
@@ -93,16 +99,69 @@ const memberLogin = async (req, res) => {
 const getMembers = async (req, res) => {
   const page = req.query.page;
 
-  let members = await Member.findAll();
+  let members = await Member.findAll({ where: { status: "approved" } });
   if (!members) {
-    throw new NotFoundError("There no members");
+    throw new NotFoundError("No members found");
   }
   if (page) {
     members = pagenation(page, members);
   }
   return successResponse(res, "", members);
 };
+//@Method:GET /members
+//@Access:admin
+//@Desc : get all members
+const getApplications = async (req, res) => {
+  const page = req.query.page;
 
-module.exports.memberSignup = memberSignup;
+  let members = await Member.findAll({ where: { status: "pending" } });
+  if (!members) {
+    throw new NotFoundError("No members found");
+  }
+  if (page) {
+    members = pagenation(page, members);
+  }
+  return successResponse(res, "Applicants", members);
+};
+
+//@Method:PUT
+//@Access:admin
+//@Desc : accept or reject an application
+const acceptMembershipApplication = async (req, res) => {
+  const memberId = req.params.memberId;
+
+  const acceptMember = await Member.findByPk(memberId);
+  acceptMember.status = "approved";
+  await acceptMember.save();
+
+  sendApplicationAccepted({
+    email: acceptMember.emailAddress,
+    firstName: acceptMember.firstName,
+  });
+
+  return successResponse(res, "Application accepted");
+};
+//@Method:PUT
+//@Access:admin
+//@Desc : reject an application
+const rejectMembershipApplication = async (req, res) => {
+  const memberId = req.params.memberId;
+
+  const rejectedMember = await Member.findByPk(memberId);
+  rejectedMember.status = "rejected";
+  await rejectedMember.save();
+
+  sendApplicationRejected({
+    email: rejectedMember.emailAddress,
+    firstName: rejectedMember.firstName,
+  });
+
+  return successResponse(res, "Application accepted");
+};
+
+module.exports.memberApplication = memberApplication;
 module.exports.getMembers = getMembers;
-module.exports.memberLogin = memberLogin;
+module.exports.getApplications = getApplications;
+module.exports.adminLogin = adminLogin;
+module.exports.acceptMembershipApplication = acceptMembershipApplication;
+module.exports.rejectMembershipApplication = rejectMembershipApplication;
