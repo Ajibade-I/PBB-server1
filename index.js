@@ -29,7 +29,7 @@ app.listen(port, () => {
   console.log(`Server listening on ${port}...`);
 });
 
-//add nodemailer
+
 // db.sequelize.sync({ force: true }).then(() => {
 //   console.log("Models synchronized with database");
 // });
